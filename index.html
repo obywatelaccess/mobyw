@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' data: blob:; connect-src 'self' http://127.0.0.1:5500 ws: wss:;">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <link rel="icon" type="image/png" sizes="394x394" href="./images/logo.png" />
+  <link rel="apple-touch-icon" sizes="394x394" href="./images/logo.png" />
+  <link rel="shortcut icon" type="image/png" href="./images/logo.png" />
+  <title>mObywatel</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+      background: #eef2f7;
+      color: #1a1f29;
+    }
+    .page {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 32px 24px;
+    }
+    header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 3vw, 3rem);
+    }
+    .card {
+      margin-top: 24px;
+      padding: 28px;
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 18px 46px rgba(19, 42, 73, 0.12);
+    }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 22px;
+      border: none;
+      border-radius: 999px;
+      background: #1f74d1;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 700;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+    .button:hover {
+      transform: translateY(-1px);
+      background: #155cb3;
+    }
+    .note {
+      margin-top: 18px;
+      color: #4a5568;
+      line-height: 1.7;
+    }
+    code {
+      font-family: Consolas, Menlo, Monaco, monospace;
+      background: #f3f6fb;
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+    /* Image upload area */
+    .upload-area {
+      margin-top: 20px;
+      padding: 16px;
+      border: 2px dashed #d1d5db;
+      border-radius: 12px;
+      background: #fbfdff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 160px;
+      position: relative;
+    }
+    .upload-area img {
+      max-width: 100%;
+      max-height: 360px;
+      border-radius: 10px;
+      display: none;
+    }
+    .upload-prompt {
+      color: #4a5568;
+      text-align: center;
+    }
+    .upload-text {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #6b7280;
+      font-weight: 600;
+      pointer-events: none;
+      padding: 8px 16px;
+      text-align: center;
+    }
+    .moby-field {
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+      margin-top: 12px;
+      padding: 13px 14px;
+      border: 1px solid #cfd8e3;
+      border-radius: 10px;
+      background: #fff;
+      color: #1a1f29;
+      font: inherit;
+    }
+    .moby-field:first-of-type {
+      margin-top: 20px;
+    }
+    .moby-field:focus {
+      border-color: #1f74d1;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(31, 116, 209, 0.14);
+    }
+    #field4,
+    #inputField7,
+    #inputField8,
+    #inputField18 {
+      cursor: pointer;
+    }
+    .field-label {
+      display: block;
+      margin: 16px 0 7px;
+      color: #172033;
+      font-size: 0.92rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    .field-label + .moby-field {
+      margin-top: 0;
+    }
+    .date-picker-panel {
+      display: none;
+      margin-top: 10px;
+      padding: 14px;
+      border: 1px solid #cfd8e3;
+      border-radius: 12px;
+      background: #f8fbff;
+      box-shadow: 0 12px 30px rgba(19, 42, 73, 0.12);
+    }
+    .date-picker-panel.open {
+      display: block;
+    }
+    .date-picker-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .date-picker-cell {
+      display: grid;
+      gap: 6px;
+    }
+    .date-picker-cell label {
+      color: #4a5568;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+    .date-picker-cell select {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 11px 10px;
+      border: 1px solid #c5d2e3;
+      border-radius: 9px;
+      background: #ffffff;
+      color: #1a1f29;
+      font: inherit;
+    }
+    .date-picker-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .date-picker-actions button {
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 16px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .date-picker-cancel {
+      background: #e6edf6;
+      color: #243044;
+    }
+    .date-picker-apply {
+      background: #1f74d1;
+      color: #ffffff;
+    }
+    @media (max-width: 520px) {
+      .date-picker-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+  </style>
+</head>
+
+<body>
+  <div class="page">
+    <header>
+      <div>
+        <h1>mObywatel</h1>
+      </div>
+    </header>
+
+    <section class="card">
+      <p>Ta strona jest głównym wejściem do strony z dowodem osobistym. Kliknij poniższy przycisk, aby przejść do mObywatel.</p>
+
+      <a class="button" href="./card1436.html" target="_blank" rel="noopener" id="openCard">
+        Otwórz mObywatel
+      </a>
+
+      <!-- UPLOAD ZDJĘCIA -->
+      <div class="upload-area" id="uploadArea">
+        <img id="imagePreview" alt="Podgląd obrazu" />
+        <div class="upload-text" id="uploadText">Prześlij obraz tutaj</div>
+        <div class="upload-prompt" id="uploadPrompt">
+          <input id="imageInput" type="file" accept="image/*" style="display:none" />
+        </div>
+      </div>
+
+      <!-- POLE DO WPISU -->
+      <label class="field-label" for="inputField1">Imie</label>
+      <input class="moby-field" data-id="field1" id="inputField1" placeholder="Imię">
+      <label class="field-label" for="inputField2">Nazwisko</label>
+      <input class="moby-field" data-id="field2" id="inputField2" placeholder="Nazwisko">
+      <label class="field-label" for="inputField3">Obywatelstwo</label>
+      <input class="moby-field" data-id="field3" id="inputField3" placeholder="Obywatelstwo">
+      <label class="field-label" for="field4">Data urodzenia</label>
+      <input class="moby-field" data-id="field4" id="field4" placeholder="DD.MM.YYYY" readonly>
+      <div class="date-picker-panel" id="datePickerPanel">
+        <div class="date-picker-grid">
+          <div class="date-picker-cell">
+            <label for="dateDay">Dzien</label>
+            <select id="dateDay"></select>
+          </div>
+          <div class="date-picker-cell">
+            <label for="dateMonth">Miesiac</label>
+            <select id="dateMonth"></select>
+          </div>
+          <div class="date-picker-cell">
+            <label for="dateYear">Rok</label>
+            <select id="dateYear"></select>
+          </div>
+        </div>
+        <div class="date-picker-actions">
+          <button class="date-picker-cancel" id="datePickerCancel" type="button">Anuluj</button>
+          <button class="date-picker-apply" id="datePickerApply" type="button">OK</button>
+        </div>
+      </div>
+      <label class="field-label" for="inputField5">Numer PESEL</label>
+      <input class="moby-field" data-id="field5" id="inputField5" placeholder="Pesel">
+      <label class="field-label" for="inputField6">Seria i numer dowodu</label>
+      <input class="moby-field" data-id="field6" id="inputField6" placeholder="seria i numer dowodu np:(FLFF 48540)">
+      <label class="field-label" for="inputField7">Termin waznosci</label>
+      <input class="moby-field" data-id="field7" id="inputField7" placeholder="DD.MM.YYYY" readonly>
+      <div class="date-picker-panel" id="datePickerPanel7">
+        <div class="date-picker-grid">
+          <div class="date-picker-cell">
+            <label for="dateDay7">Dzien</label>
+            <select id="dateDay7"></select>
+          </div>
+          <div class="date-picker-cell">
+            <label for="dateMonth7">Miesiac</label>
+            <select id="dateMonth7"></select>
+          </div>
+          <div class="date-picker-cell">
+            <label for="dateYear7">Rok</label>
+            <select id="dateYear7"></select>
+          </div>
+        </div>
+        <div class="date-picker-actions">
+          <button class="date-picker-cancel" id="datePickerCancel7" type="button">Anuluj</button>
+          <button class="date-picker-apply" id="datePickerApply7" type="button">OK</button>
+        </div>
+      </div>
+      <label class="field-label" for="inputField8">Data wydania</label>
+      <input class="moby-field" data-id="field8" id="inputField8" placeholder="DD.MM.YYYY" readonly>
+      <div class="date-picker-panel" id="datePickerPanel8">
+        <div class="date-picker-grid">
+          <div class="date-picker-cell">
+            <label for="dateDay8">Dzien</label>
+            <select id="dateDay8"></select>
+          </div>
+          <div class="date-picker-cell">
+            <label for="dateMonth8">Miesiac</label>
+            <select id="dateMonth8"></select>
+          </div>
+          <div class="date-picker-cell">
+            <label for="dateYear8">Rok</label>
+            <select id="dateYear8"></select>
+          </div>
+        </div>
+        <div class="date-picker-actions">
+          <button class="date-picker-cancel" id="datePickerCancel8" type="button">Anuluj</button>
+          <button class="date-picker-apply" id="datePickerApply8" type="button">OK</button>
+        </div>
+      </div>
+      <label class="field-label" for="inputField9">Imie ojca</label>
+      <input class="moby-field" data-id="field9" id="inputField9" placeholder="Imię ojca">
+      <label class="field-label" for="inputField10">Imie matki</label>
+      <input class="moby-field" data-id="field10" id="inputField10" placeholder="imię matki">
+      <label class="field-label" for="inputField11">Nazwisko rodowe</label>
+      <input class="moby-field" data-id="field11" id="inputField11" placeholder="nazwisko rodowe">
+      <label class="field-label" for="inputField12">Plec</label>
+      <select class="moby-field" data-id="field12" id="inputField12">
+        <option value="mężczyzna">Mężczyzna</option>
+        <option value="kobieta">Kobieta</option>
+      </select>
+      <label class="field-label" for="inputField13">Nazwisko rodowe ojca</label>
+      <input class="moby-field" data-id="field13" id="inputField13" placeholder="nazwisko rodowe ojca">
+      <label class="field-label" for="inputField14">Nazwisko rodowe matki</label>
+      <input class="moby-field" data-id="field14" id="inputField14" placeholder="nazwisko rodowe matki">
+      <label class="field-label" for="inputField15">Miejsce urodzenia</label>
+      <input class="moby-field" data-id="field15" id="inputField15" placeholder="miejsce urodzenia">
+      <label class="field-label" for="inputField16">Kraj urodzenia</label>
+      <input class="moby-field" data-id="field16" id="inputField16" placeholder="kraj urodzenia">
+      <label class="field-label" for="inputField17">Adres zameldowania</label>
+      <input class="moby-field" data-id="field17" id="inputField17" placeholder="adres zameldowania">
+      <label class="field-label" for="inputField18">Data zameldowania</label>
+      <input class="moby-field" data-id="field18" id="inputField18" placeholder="DD.MM.YYYY" readonly>
+      <div class="date-picker-panel" id="datePickerPanel18">
+        <div class="date-picker-grid">
+          <div class="date-picker-cell">
+            <label for="dateDay18">Dzien</label>
+            <select id="dateDay18"></select>
+          </div>
+          <div class="date-picker-cell">
+            <label for="dateMonth18">Miesiac</label>
+            <select id="dateMonth18"></select>
+          </div>
+          <div class="date-picker-cell">
+            <label for="dateYear18">Rok</label>
+            <select id="dateYear18"></select>
+          </div>
+        </div>
+        <div class="date-picker-actions">
+          <button class="date-picker-cancel" id="datePickerCancel18" type="button">Anuluj</button>
+          <button class="date-picker-apply" id="datePickerApply18" type="button">OK</button>
+        </div>
+      </div>
+     
+
+      <p class="note">
+        Plik strony mObywatel i wszystkie zasoby znajdują się w folderze
+        <code>cweljebany2116.github.io/</code>.
+        Jeśli chcesz wdrożyć stronę, zachowaj tę strukturę.
+      </p>
+    </section>
+  </div>
+
+  <script>
+(function () {
+
+  // ======================
+  // 📸 UPLOAD ZDJĘCIA
+  // ======================
+  const input = document.getElementById('imageInput');
+  const img = document.getElementById('imagePreview');
+  const prompt = document.getElementById('uploadPrompt');
+  const area = document.getElementById('uploadArea');
+  const uploadText = document.getElementById('uploadText');
+
+  if (input && img && area) {
+
+    input.addEventListener('change', function () {
+      const f = this.files && this.files[0];
+      if (!f) return;
+
+      const reader = new FileReader();
+      reader.onload = function (ev) {
+        const dataUrl = ev.target.result;
+
+        img.src = dataUrl;
+        img.style.display = 'block';
+        if (prompt) prompt.style.display = 'none';
+        if (uploadText) uploadText.style.display = 'none';
+
+        try {
+          localStorage.setItem('moby_uploaded_image', dataUrl);
+        } catch (err) {
+          console.warn('Could not save uploaded image', err);
+        }
+      };
+      reader.readAsDataURL(f);
+    });
+
+    area.addEventListener('click', function () {
+      input.click();
+    });
+
+    // odczyt zdjęcia po odświeżeniu
+    try {
+      const savedImg = localStorage.getItem('moby_uploaded_image');
+      if (savedImg) {
+        img.src = savedImg;
+        img.style.display = 'block';
+        if (prompt) prompt.style.display = 'none';
+        if (uploadText) uploadText.style.display = 'none';
+      }
+    } catch (err) {
+      console.warn('Could not load uploaded image', err);
+    }
+  }
+
+})();
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  const inputs = document.querySelectorAll(".moby-field");
+
+  // =========================
+  // LOAD SAVED VALUES
+  // =========================
+  inputs.forEach(input => {
+    const id = input.dataset.id;
+    const saved = localStorage.getItem("moby_" + id);
+
+    if (saved !== null) {
+      input.value = saved;
+    }
+
+    // =========================
+    // SAVE ON TYPING
+    // =========================
+    input.addEventListener("input", () => {
+      localStorage.setItem("moby_" + id, input.value);
+    });
+  });
+
+});
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  function pad(value) {
+    return String(value).padStart(2, "0");
+  }
+
+  function fillNumberSelect(select, start, end, selectedValue) {
+    select.innerHTML = "";
+
+    for (let value = start; value <= end; value++) {
+      const option = document.createElement("option");
+      option.value = String(value);
+      option.textContent = pad(value);
+
+      if (value === selectedValue) {
+        option.selected = true;
+      }
+
+      select.appendChild(option);
+    }
+  }
+
+  function fillYearSelect(select, selectedYear) {
+    select.innerHTML = "";
+
+    const maxYear = new Date().getFullYear() + 20;
+    for (let year = maxYear; year >= 2000; year--) {
+      const option = document.createElement("option");
+      option.value = String(year);
+      option.textContent = String(year);
+
+      if (year === selectedYear) {
+        option.selected = true;
+      }
+
+      select.appendChild(option);
+    }
+  }
+
+  function getFieldDateParts(input) {
+    const match = input.value.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+
+    if (!match) {
+      return { day: 1, month: 1, year: 2000 };
+    }
+
+    return {
+      day: Number(match[1]),
+      month: Number(match[2]),
+      year: Number(match[3]),
+    };
+  }
+
+  function formatDateParts(parts) {
+    return `${pad(parts.day)}.${pad(parts.month)}.${parts.year}`;
+  }
+
+  function addYears(parts, years) {
+    const targetYear = parts.year + years;
+    const daysInTargetMonth = new Date(targetYear, parts.month, 0).getDate();
+
+    return {
+      day: Math.min(parts.day, daysInTargetMonth),
+      month: parts.month,
+      year: targetYear,
+    };
+  }
+
+  function addYearsAndRandomDays(parts, years, maxRandomDays) {
+    const base = addYears(parts, years);
+    const date = new Date(base.year, base.month - 1, base.day);
+    const randomDays = Math.floor(Math.random() * maxRandomDays) + 1;
+
+    date.setDate(date.getDate() + randomDays);
+
+    return dateToParts(date);
+  }
+
+  function addRandomDays(parts, maxRandomDays) {
+    const date = new Date(parts.year, parts.month - 1, parts.day);
+    const randomDays = Math.floor(Math.random() * (maxRandomDays + 1));
+
+    date.setDate(date.getDate() + randomDays);
+
+    return dateToParts(date);
+  }
+
+  function dateToParts(date) {
+    return {
+      day: date.getDate(),
+      month: date.getMonth() + 1,
+      year: date.getFullYear(),
+    };
+  }
+
+  function setDateField(input, parts) {
+    if (!input) return;
+
+    input.value = formatDateParts(parts);
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  }
+
+  function closeAllPickers() {
+    document.querySelectorAll(".date-picker-panel.open").forEach(panel => {
+      panel.classList.remove("open");
+    });
+  }
+
+  function setupDatePicker(config) {
+    const input = document.getElementById(config.inputId);
+    const panel = document.getElementById(config.panelId);
+    const daySelect = document.getElementById(config.dayId);
+    const monthSelect = document.getElementById(config.monthId);
+    const yearSelect = document.getElementById(config.yearId);
+    const applyButton = document.getElementById(config.applyId);
+    const cancelButton = document.getElementById(config.cancelId);
+
+    if (!input || !panel || !daySelect || !monthSelect || !yearSelect || !applyButton || !cancelButton) {
+      return;
+    }
+
+    function updateDays() {
+      const selectedDay = Number(daySelect.value) || 1;
+      const month = Number(monthSelect.value) || 1;
+      const year = Number(yearSelect.value) || 2000;
+      const daysInMonth = new Date(year, month, 0).getDate();
+
+      fillNumberSelect(daySelect, 1, daysInMonth, Math.min(selectedDay, daysInMonth));
+    }
+
+    function syncPickerFromField() {
+      const selected = getFieldDateParts(input);
+
+      fillNumberSelect(monthSelect, 1, 12, selected.month);
+      fillYearSelect(yearSelect, selected.year);
+      fillNumberSelect(daySelect, 1, 31, selected.day);
+      updateDays();
+    }
+
+    function closePicker() {
+      panel.classList.remove("open");
+    }
+
+    syncPickerFromField();
+
+    input.addEventListener("click", (event) => {
+      event.stopPropagation();
+      const shouldOpen = !panel.classList.contains("open");
+
+      closeAllPickers();
+      syncPickerFromField();
+
+      if (shouldOpen) {
+        panel.classList.add("open");
+      }
+    });
+
+    panel.addEventListener("click", (event) => {
+      event.stopPropagation();
+    });
+
+    monthSelect.addEventListener("change", updateDays);
+    yearSelect.addEventListener("change", updateDays);
+
+    applyButton.addEventListener("click", () => {
+      const selected = {
+        day: Number(daySelect.value),
+        month: Number(monthSelect.value),
+        year: Number(yearSelect.value),
+      };
+
+      input.value = formatDateParts(selected);
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+
+      if (config.linkedInputId && config.linkedYearOffset) {
+        setDateField(document.getElementById(config.linkedInputId), addYears(selected, config.linkedYearOffset));
+      }
+
+      if (config.issueDateInputId && config.expiryDateInputId) {
+        const issueDateParts = addYearsAndRandomDays(selected, 17, 365);
+
+        setDateField(document.getElementById(config.issueDateInputId), issueDateParts);
+        setDateField(document.getElementById(config.expiryDateInputId), addYears(issueDateParts, 10));
+      }
+
+      if (config.registrationDateInputId) {
+        setDateField(document.getElementById(config.registrationDateInputId), addRandomDays(selected, 90));
+      }
+
+      closePicker();
+    });
+
+    cancelButton.addEventListener("click", closePicker);
+  }
+
+  [
+    {
+      inputId: "field4",
+      panelId: "datePickerPanel",
+      dayId: "dateDay",
+      monthId: "dateMonth",
+      yearId: "dateYear",
+      applyId: "datePickerApply",
+      cancelId: "datePickerCancel",
+      issueDateInputId: "inputField8",
+      expiryDateInputId: "inputField7",
+      registrationDateInputId: "inputField18",
+    },
+    {
+      inputId: "inputField7",
+      panelId: "datePickerPanel7",
+      dayId: "dateDay7",
+      monthId: "dateMonth7",
+      yearId: "dateYear7",
+      applyId: "datePickerApply7",
+      cancelId: "datePickerCancel7",
+      linkedInputId: "inputField8",
+      linkedYearOffset: -10,
+    },
+    {
+      inputId: "inputField8",
+      panelId: "datePickerPanel8",
+      dayId: "dateDay8",
+      monthId: "dateMonth8",
+      yearId: "dateYear8",
+      applyId: "datePickerApply8",
+      cancelId: "datePickerCancel8",
+      linkedInputId: "inputField7",
+      linkedYearOffset: 10,
+    },
+    {
+      inputId: "inputField18",
+      panelId: "datePickerPanel18",
+      dayId: "dateDay18",
+      monthId: "dateMonth18",
+      yearId: "dateYear18",
+      applyId: "datePickerApply18",
+      cancelId: "datePickerCancel18",
+    },
+  ].forEach(setupDatePicker);
+
+  document.addEventListener("click", closeAllPickers);
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeAllPickers();
+    }
+  });
+});
+</script>
+
+
+
+</body>
+
+</html>
+

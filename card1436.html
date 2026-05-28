@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' data: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' http://127.0.0.1:5500 ws: wss:;">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <meta name="viewport" content="width=device-width, initial-scale=0.8, user-scalable=no" />
+  <title>mObywatel</title>
+  <link rel="stylesheet" href="main.css" />
+  <link rel="stylesheet" href="card.css" />
+  <link rel="icon" type="image/x-icon" href="images/logo.png" />
+  <link rel="apple-touch-icon" href="images/logo.png" />
+  <link rel="shortcut icon" href="images/logo.png" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=0.8, user-scalable=no" />
+  <meta name="mobile-web-app-capable" content="yes" />
+</head>
+<body>
+  <div class="top_grid_fixed">
+    <div class="action_grid_fixed">
+      <img src="images/back_blue.png" class="back_img_fixed" />
+      <p onclick="sendTo('home1436')" class="back_text_fixed">Wróć</p>
+    </div>
+    <p class="title_text_fixed">mDowód</p>
+    <img src="images/help.png" class="help_img_fixed" />
+  </div>
+  <div class="bottom_bar">
+    <div class="bottom_bar_grid">
+      <div class="bottom_element_grid" send="home">
+        <div class="bottom_element_image home"></div>
+        <p class="bottom_element_text">Pulpit</p>
+      </div>
+      <div class="bottom_element_grid" send="documents">
+        <div class="bottom_element_image documents_open"></div>
+        <p class="bottom_element_text open">Dokumenty</p>
+      </div>
+      <div class="bottom_element_grid" send="services">
+        <div class="bottom_element_image services"></div>
+        <p class="bottom_element_text">Usługi</p>
+      </div>
+      <div class="bottom_element_grid" send="qr">
+        <div class="bottom_element_image qr"></div>
+        <p class="bottom_element_text">Kod QR</p>
+      </div>
+      <div class="bottom_element_grid" send="more">
+        <div class="bottom_element_image more"></div>
+        <p class="bottom_element_text">Więcej</p>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <p class="time_text" id="time"></p>
+    <div class="id_image_data">
+      <img draggable="false" class="id_image" src="images/plate.png" />
+      <div class="inset"></div>
+      <div class="id_own_image"></div>
+      <img draggable="false" src="images/flag.webp" class="flag_video" />
+      <img
+        draggable="false"
+        src="images/eagle.gif"
+        class="eagle_video"
+      />
+      <p class="eagle_text">Rzeczpospolita<br />Polska</p>
+      <div class="id_data_grid">
+        <div class="data_holder">
+          <p class="data_title firstname" id="field1"></p>
+          <p class="data_value">Imię (imiona)</p>
+        </div>
+        <div class="data_holder">
+          <p class="data_title surname" id="field2"></p>
+          <p class="data_value">Nazwisko</p>
+        </div>
+        <div class="data_holder">
+          <p class="data_title" id="field3"></p>
+          <p class="data_value">Obywatelstwo</p>
+        </div>
+        <div class="data_holder">
+          <p class="data_title" id="field4"></p>
+          <p class="data_value">Data urodzenia</p>
+        </div>
+        <div class="data_holder">
+          <p class="data_title" id="field5"></p>
+          <p class="data_value">Numer PESEL</p>
+        </div>
+      </div>
+    </div>
+    <div class="id_bottom">
+      <div class="bottom_grid">
+        <img class="bottom_image" src="images/valid.png" />
+        <p
+          class="bottom_text"
+          style="
+            color: #317c26;
+            font-weight: 400;
+            font-size: 18px;
+            margin-left: 20px;
+          "
+        >
+          Dokument ważny
+        </p>
+      </div>
+    </div>
+    <div class="under_container">
+      <div class="under_grid">
+        <div class="under_icon" onclick="sendTo('scan', 'card1436')">
+          <div class="under_image_circle">
+            <img class="under_image" src="images/confirm.png" />
+          </div>
+          <p class="under_text">Potwierdź swoje dane</p>
+        </div>
+        <div class="under_icon" onclick="sendTo('document')">
+          <div class="under_image_circle">
+            <img class="under_image" src="images/card.png" />
+          </div>
+          <p class="under_text">Dane dowodu osobistego</p>
+        </div>
+        <div class="under_icon" onclick="sendTo('pesel')">
+          <div class="under_image_circle">
+            <img class="under_image" src="images/lock.png" />
+          </div>
+          <p class="under_text">Zastrzeż PESEL</p>
+        </div>
+        <div class="under_icon" onclick="sendTo('shortcuts')">
+          <div class="under_image_circle">
+            <img class="under_image" src="images/more.png" />
+          </div>
+          <p class="under_text">Pozostałe skróty</p>
+        </div>
+      </div>
+    </div>
+    <div class="confirm_info">
+      <div class="confirm_box">
+        <p class="box_top">Seria i numer</p>
+        <p class="box_value box_highlight" id="field6"></p>
+        <button class="main_button">Kopiuj</button>
+      </div>
+      <div class="confirm_box">
+        <p class="box_top">Termin ważności</p>
+        <p class="box_value" id="field7"></p>
+      </div>
+      <div class="confirm_box">
+        <p class="box_top">Data wydania</p>
+        <p class="box_value" id="field8"></p>
+      </div>
+      <div class="confirm_box">
+        <p class="box_top">Imię ojca</p>
+        <p class="box_value" id="field9"></p>
+      </div>
+      <div class="confirm_box" style="border: none">
+        <p class="box_top">Imię matki</p>
+        <p class="box_value" id="field10"></p>
+      </div>
+    </div>
+    <div class="other_grid">
+      <div class="bottom_holder info_holder">
+        <div class="bottom_grid">
+          <p class="bottom_text" style="color: #1f2125; margin-left: 0px">
+            Twoje dodatkowe dane
+          </p>
+        </div>
+        <img class="action_arrow" src="images/right_arrow.png" />
+        <div class="additional_holder">
+          <div class="additional_grid">
+            <p class="additional_title">Nazwisko rodowe</p>
+            <p class="additional_subtitle" id="field11"></p>
+          </div>
+          <div class="additional_grid">
+            <p class="additional_title">Płeć</p>
+            <p class="additional_subtitle" id="field12"></p>
+          </div>
+          <div class="additional_grid">
+            <p class="additional_title">Nazwisko rodowe ojca</p>
+            <p class="additional_subtitle" id="field13"></p>
+          </div>
+          <div class="additional_grid">
+            <p class="additional_title">Nazwisko rodowe matki</p>
+            <p class="additional_subtitle" id="field14"></p>
+          </div>
+          <div class="additional_grid">
+            <p class="additional_title">Miejsce urodzenia</p>
+            <p class="additional_subtitle" id="field15"></p>
+          </div>
+          <div class="additional_grid">
+            <p class="additional_title">Kraj urodzenia</p>
+            <p class="additional_subtitle" id="field16"></p>
+          </div>
+          <div class="additional_grid">
+            <p class="additional_title">Adres zameldowania na pobyt stały</p>
+            <p class="additional_subtitle" id="field17"></p>
+          </div>
+          <div class="additional_grid" style="border-bottom: none">
+            <p class="additional_title">Data zameldowania na pobyt stały</p>
+            <p class="additional_subtitle" id="field18"></p>
+          </div>
+        </div>
+      </div>
+      <div class="bottom_holder" style="height: 90px; margin-bottom: 120px">
+        <div class="bottom_update">
+          <div class="bottom_update_grid">
+            <p class="bottom_update_text" style="margin-left: 0px">
+              Ostatnia aktualizacja
+            </p>
+            <p class="bottom_update_value" style="margin-left: 0px"></p>
+          </div>
+          <button class="main_button update">Aktualizuj</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button id="toggleEdit" class="button" style="margin-top:15px;">
+  Zablokuj edycję
+</button>
+
+  <script src="encode.js"></script>
+  <script src="bar.js"></script>
+  <script src="card.js"></script>
+  <script src="manifest.js"></script>
+  <script src="cache.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  // =========================
+  // LOAD IMAGE
+  // =========================
+  try {
+    const data = localStorage.getItem('moby_uploaded_image');
+
+    if (data) {
+      const holder = document.querySelector('.id_own_image');
+
+      if (holder) {
+        holder.style.backgroundImage = `url(${data})`;
+        holder.style.backgroundSize = 'cover';
+        holder.style.backgroundPosition = 'center';
+      }
+    }
+  } catch (e) {
+    console.warn('Failed to load uploaded image', e);
+  }
+
+  // =========================
+  // LOAD TEXT FIELDS
+  // =========================
+  for (let i = 1; i <= 18; i++) {
+    const el = document.getElementById("field" + i);
+    const saved = localStorage.getItem("moby_field" + i);
+
+    if (el) {
+      el.textContent = saved || "";
+    }
+  }
+
+});
+</script>
+</body>
+</html>
